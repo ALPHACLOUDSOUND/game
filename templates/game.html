@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cricket Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #282c34;
+            color: white;
+        }
+        #gameBoard {
+            margin: 20px auto;
+            width: 600px;
+            border: 2px solid #000;
+            padding: 10px;
+            background: #1c1e22;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background: #61dafb;
+            border: none;
+            cursor: pointer;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Cricket Game</h1>
+    <div id="gameBoard">
+        <h2 id="status">Waiting for players to join...</h2>
+        <div id="captainSelection" style="display: none;">
+            <h3>You are the captain. Start the game when ready:</h3>
+            <button onclick="startGame()">Start Game</button>
+        </div>
+        <div id="gameActions" style="display: none;">
+            <h3>Game Actions</h3>
+            <button onclick="playBall()">Play Ball</button>
+        </div>
+    </div>
+    <script>
+        const socket = io();
+        const playerName = "{{ player_name }}";
+        const gameId = "{{ game_id }}";
+
+        socket.emit('join_game', { game_id: gameId, player_name: playerName });
+
+        socket.on('player_joined', function(data) {
+            document.getElementById('status').innerText = `${data.player_name} has joined the game ${data.game_id}.`;
+        });
+
+        socket.on('captains_selected', function(data) {
+            if (data.team_captains.includes(playerName)) {
+                document.getElementById('captainSelection').style.display = 'block';
+            }
+            document.getElementById('status').innerText = `Captains selected: ${data.team_captains.join(', ')}. Waiting for a captain to start the game.`;
+        });
+
+        socket.on('game_started', function(data) {
+            document.getElementById('captainSelection').style.display = 'none';
+            document.getElementById('gameActions').style.display = 'block';
+            document.getElementById('status').innerText = `Game started! Play your turns.`;
+        });
+
+        socket.on('ball_played', function(data) {
+            document.getElementById('status').innerText = `${data.player_name} scored ${data.runs} runs.`;
+        });
+
+        socket.on('wicket', function(data) {
+            document.getElementById('status').innerText = `${data.player_name} is out!`;
+        });
+
+        socket.on('over', function(data) {
+            document.getElementById('status').innerText = `Over ${data.overs} completed.`;
+        });
+
+        socket.on('game_over', function(data) {
+            document.getElementById('status').innerText = `Game Over! Team A: ${data.score_a}, Team B: ${data.score_b}`;
+        });
+
+        function startGame() {
+            socket.emit('start_game', { game_id: gameId, player_name: playerName });
+        }
+
+        function playBall() {
+            socket.emit('play_ball', { player_name: playerName });
+        }
+    </script>
+</body>
+</html>
