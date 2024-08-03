@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Cricket Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #282c34;
+            color: white;
+        }
+        #gameBoard {
+            margin: 20px auto;
+            width: 600px;
+            border: 2px solid #000;
+            padding: 10px;
+            background: #1c1e22;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background: #61dafb;
+            border: none;
+            cursor: pointer;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Online Cricket Game</h1>
+    <div id="gameBoard">
+        <h2>Welcome to the Cricket Game!</h2>
+        <form method="post" action="/create">
+            <input type="text" name="player_name" placeholder="Enter your name" required>
+            <input type="text" name="game_id" placeholder="Enter game ID" required>
+            <button type="submit">Create/Join Game</button>
+        </form>
+    </div>
+</body>
+</html>
